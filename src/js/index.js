@@ -157,7 +157,7 @@ function hideLoadMoreButton() {
 
 /**
  |============================
- | 
+ | Finish
  |============================
 */
 const endOfCollectionMessage =
