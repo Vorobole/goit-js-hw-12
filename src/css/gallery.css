@@ -177,7 +177,7 @@ figure {
   font-weight: 500;
   letter-spacing: 0.64px;
   background-color: #1e30d1;
-  display: flex;
+  display: block;
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;

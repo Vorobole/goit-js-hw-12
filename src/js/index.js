@@ -23,7 +23,7 @@ searchForm.addEventListener('submit', async function (event) {
   }
 
   currentQuery = queryInput;
-  currentPage = 1;
+  // currentPage = 1;
   galleryContainer.innerHTML = '';
   loaderContainer.style.display = 'block';
 
@@ -37,7 +37,7 @@ searchForm.addEventListener('submit', async function (event) {
       showLoadMoreButton();
     } else {
       toastError(
-        'Вибачте, немає зображень, які відповідають вашому пошуковому запиту. Будь ласка спробуйте ще раз!'
+        'Sorry, there are no images matching your search query. Please try again!'
       );
     }
   } catch (error) {
@@ -56,7 +56,7 @@ loadMoreButton.addEventListener('click', async function () {
     const { hits } = await fetchImages(currentQuery, currentPage);
     if (Array.isArray(hits) && hits.length > 0) {
       const galleryHTML = hits.map(createGallery).join('');
-      galleryContainer.innerHTML += galleryHTML;
+      galleryContainer.insertAdjacentHTML += galleryHTML;
       lightbox.refresh();
     } else {
       hideLoadMoreButton();
@@ -161,10 +161,11 @@ function hideLoadMoreButton() {
  |============================
 */
 const endOfCollectionMessage =
-  'Вибачте, але ви досягли кінця результатів пошуку.';
+  'Sorry, but you have reached the end of the search results.';
 
 function updateLoadMoreButton(totalHits) {
-  if (currentPage * 15 >= totalHits) {
+  const totalPages = Math.ceil(totalHits / 15);
+  if (currentPage >= totalPages) {
     hideLoadMoreButton();
     toastError(endOfCollectionMessage);
   } else {
@@ -173,27 +174,7 @@ function updateLoadMoreButton(totalHits) {
 }
 
 loadMoreButton.addEventListener('click', async function () {
-  currentPage++;
-  loaderContainer.style.display = 'block';
-
-  try {
-    const { hits, totalHits } = await fetchImages(currentQuery, currentPage);
-    if (Array.isArray(hits) && hits.length > 0) {
-      const galleryHTML = hits.map(createGallery).join('');
-      galleryContainer.innerHTML += galleryHTML;
-      lightbox.refresh();
-    } else {
-      updateLoadMoreButton(totalHits);
-    }
-  } catch (error) {
-    toastError(`Error fetching more images: ${error.message}`);
-  } finally {
-    loaderContainer.style.display = 'none';
-  }
-});
-
-loadMoreButton.addEventListener('click', async function () {
-  currentPage++;
+  currentPage += 1;
   loaderContainer.style.display = 'block';
 
   try {
@@ -203,8 +184,10 @@ loadMoreButton.addEventListener('click', async function () {
       galleryContainer.innerHTML += galleryHTML;
       lightbox.refresh();
       smoothScrollToNextGroup();
-    } else {
       updateLoadMoreButton(totalHits);
+    } else {
+      hideLoadMoreButton();
+      toastError(endOfCollectionMessage);
     }
   } catch (error) {
     toastError(`Error fetching more images: ${error.message}`);
@@ -217,6 +200,6 @@ function smoothScrollToNextGroup() {
   const galleryCardHeight = document
     .querySelector('.gallery-link')
     .getBoundingClientRect().height;
-  const scrollHeight = galleryCardHeight * 3;
+  const scrollHeight = galleryCardHeight * 2;
   window.scrollBy({ top: scrollHeight, behavior: 'smooth' });
 }
