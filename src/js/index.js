@@ -48,26 +48,6 @@ searchForm.addEventListener('submit', async function (event) {
   }
 });
 
-loadMoreButton.addEventListener('click', async function () {
-  currentPage++;
-  loaderContainer.style.display = 'block';
-
-  try {
-    const { hits } = await fetchImages(currentQuery, currentPage);
-    if (Array.isArray(hits) && hits.length > 0) {
-      const galleryHTML = hits.map(createGallery).join('');
-      galleryContainer.insertAdjacentHTML += galleryHTML;
-      lightbox.refresh();
-    } else {
-      hideLoadMoreButton();
-    }
-  } catch (error) {
-    toastError(`Error fetching more images: ${error.message}`);
-  } finally {
-    loaderContainer.style.display = 'none';
-  }
-});
-
 const toastOptions = {
   titleColor: '#FFFFFF',
   messageColor: '#FFFFFF',
