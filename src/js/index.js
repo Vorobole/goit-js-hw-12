@@ -21,9 +21,10 @@ searchForm.addEventListener('submit', async function (event) {
   if (queryInput === '') {
     return;
   }
-
+  loadMoreButton.style.display = 'none';
+  currentPage = 1;
   currentQuery = queryInput;
-  // currentPage = 1;
+
   galleryContainer.innerHTML = '';
   loaderContainer.style.display = 'block';
 
@@ -92,15 +93,8 @@ async function fetchImages(q, page) {
     page,
   };
 
-  try {
-    const response = await axios.get(BASE_URL, { params });
-    if (!response.data) {
-      throw new Error('No data found');
-    }
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error fetching images: ${error.message}`);
-  }
+  const response = await axios.get(BASE_URL, { params });
+  return response.data;
 }
 
 function createGallery({
@@ -161,7 +155,7 @@ loadMoreButton.addEventListener('click', async function () {
     const { hits, totalHits } = await fetchImages(currentQuery, currentPage);
     if (Array.isArray(hits) && hits.length > 0) {
       const galleryHTML = hits.map(createGallery).join('');
-      galleryContainer.innerHTML += galleryHTML;
+      galleryContainer.insertAdjacentHTML('beforeend', galleryHTML);
       lightbox.refresh();
       smoothScrollToNextGroup();
       updateLoadMoreButton(totalHits);
